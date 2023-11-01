@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-void swapp(int* a, int* b)
+void swap(int* a, int* b)
 {
     int temp = *a;
     *a = *b;
@@ -16,13 +16,11 @@ void insertSort(int array[], int start, int end)
     {
         return;
     }
-    
-    int element, location;
 
     for (int i = start; i < end; i++)
     {
-        element = array[i];
-        location = i - 1;
+        int element = array[i];
+        int location = i - 1;
 
         while (location >= 0 && array[location] > element)
         {
@@ -44,12 +42,12 @@ int partition(int array[], int start, int end)
     {   
         if (array[i] <= pivot)
         {
-            swapp(&array[i], &array[index]);
-            index++;
+            swap(&array[i], &array[index]);
+            ++index;
         }
     }
     
-    swapp (&array[index], &array[end - 1]);
+    swap(&array[index], &array[end - 1]);
     return index;
 }
 
@@ -73,13 +71,11 @@ void quickSort(int array[], int start, int end)
     }
 }
 
-
-
-bool arraysEqual(int array1[], int array2[], int len)
+bool arraysEqual(int array1[], int array2[], int length)
 {
     bool result = true;
 
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < length; i++)
     {
         if (! (array1[i] == array2 [i]))
         {
@@ -93,14 +89,10 @@ bool arraysEqual(int array1[], int array2[], int len)
 bool test(int array[], int arraySorted[], int arrayLength)
 {
     quickSort(array, 0, arrayLength);
-    if (arraysEqual(array, arraySorted, arrayLength))
-    {
-        return true;
-    }
-    return false;
+    return arraysEqual(array, arraySorted, arrayLength);
 }
 
-int main()
+bool tests()
 {
     int array1[] = {4, 1, 8, 5};
     int array1Sorted[] = {1, 4, 5, 8};
@@ -114,7 +106,13 @@ int main()
     int array3Sorted[] = {3, 34, 34, 34, 100, 134, 143, 544, 565, 566, 1234, 1234, 2452};
     int array3Length = 13;
 
-    if (test(array1, array1Sorted, array1Length) && test(array2, array2Sorted, array2Length) && test(array3, array3Sorted, array3Length))
+    return test(array1, array1Sorted, array1Length) && test(array2, array2Sorted, array2Length) \
+    && test(array3, array3Sorted, array3Length);
+}
+
+int main()
+{
+    if (tests())
     {
         printf("Все тесты пройдены\n");
         return 0;
