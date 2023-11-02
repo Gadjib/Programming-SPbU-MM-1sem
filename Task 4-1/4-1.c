@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #define SIZE_OF_NUMBERS 31
 
 void decToBin(int number, int array[])
@@ -71,8 +72,8 @@ int main()
 
     printf("\n");
 
-    int number1Array[SIZE_OF_NUMBERS];
-    int number2Array[SIZE_OF_NUMBERS];
+    int *number1Array = (int*)malloc(SIZE_OF_NUMBERS * sizeof(int));
+    int *number2Array = (int*)malloc(SIZE_OF_NUMBERS * sizeof(int));
 
     decToBin(number1, number1Array);
     decToBin(number2, number2Array);
@@ -84,7 +85,7 @@ int main()
 
     printf("\n");
 
-    int sumArray[SIZE_OF_NUMBERS];
+    int *sumArray = (int*)malloc(SIZE_OF_NUMBERS * sizeof(int));
     sum(number1Array, number2Array, sumArray);
 
     printf("Сложение их в столбик:\n ");
@@ -96,8 +97,11 @@ int main()
 
     printf("\n");
 
-    int decSum;
-    decSum = binToDec(sumArray);
+    int decSum = binToDec(sumArray);
     printf("Сумма в десятичном представлении:   ");
     printf("%d\n", decSum);
+    
+    free(number1Array);
+    free(number2Array);
+    free(sumArray);
 }
