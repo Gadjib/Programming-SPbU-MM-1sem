@@ -13,6 +13,12 @@ struct Contact
     char phone[MAX_PHONE_SIZE];
 };
 
+enum Choice
+{
+    byName,
+    byPhone
+};
+
 int compareStrings(const char *string1, const char *string2) 
 {
     while (*string1 && *string2) 
@@ -27,7 +33,7 @@ int compareStrings(const char *string1, const char *string2)
     return tolower(*string1) - tolower(*string2);
 }
 
-void merge(struct Contact *array, int left, int mid, int right, int choice) 
+void merge(struct Contact *array, int left, int mid, int right, enum Choice choice) 
 {
     int n1 = mid - left + 1;
     int n2 = right - mid;
@@ -50,8 +56,8 @@ void merge(struct Contact *array, int left, int mid, int right, int choice)
 
     while (i < n1 && j < n2) 
     {
-        if ((choice == 1 && compareStrings(contactLeft[i].name, contactRight[j].name) <= 0) ||
-            (choice == 2 && compareStrings(contactLeft[i].phone, contactRight[j].phone) <= 0)) 
+        if ((choice == byName && compareStrings(contactLeft[i].name, contactRight[j].name) <= 0) ||
+            (choice == byPhone && compareStrings(contactLeft[i].phone, contactRight[j].phone) <= 0)) 
         {
             array[k] = contactLeft[i];
             i++;
@@ -82,11 +88,11 @@ void merge(struct Contact *array, int left, int mid, int right, int choice)
     free(contactRight);
 }
 
-void mergeSort(struct Contact *array, int left, int right, int choice) 
+void mergeSort(struct Contact *array, int left, int right, enum Choice choice) 
 {
     if (left < right) 
     {
-        int mid = left + (right - left) / 2;
+        const int mid = left + (right - left) / 2;
 
         mergeSort(array, left, mid, choice);
         mergeSort(array, mid + 1, right, choice);
@@ -103,18 +109,16 @@ void printContacts(struct Contact *array, int size)
     }
 }
 
-int main() 
+int readFromFile(struct Contact **contacts, int *numContacts)
 {
     FILE *file = fopen("6-3.txt", "r");
     if (file == NULL) 
     {
         perror("Ошибка открытия файла");
-        return 1;
+        return -1;
     }
 
-    struct Contact *contacts = NULL;
-    int numContacts = 0;
-    char line[MAX_STRING_SIZE]; 
+    char line[MAX_STRING_SIZE] = {'\0'};
 
     while (fgets(line, sizeof(line), file) != NULL) 
     {
@@ -126,27 +130,42 @@ int main()
             {
                 phone++;
             }
-            numContacts++;
-            contacts = realloc(contacts, numContacts * sizeof(struct Contact));
+            (*numContacts)++;
+            *contacts = realloc(*contacts, *numContacts * sizeof(struct Contact));
             
-            strcpy(contacts[numContacts - 1].name, name);
-            strcpy(contacts[numContacts - 1].phone, phone);
+            strcpy((*contacts)[*numContacts - 1].name, name);
+            strcpy((*contacts)[*numContacts - 1].phone, phone);
         }
+    }
+
+    fclose(file);
+    return 0;
+}
+
+int main() 
+{
+    struct Contact *contacts = NULL;
+    int numContacts = 0;
+
+    if (readFromFile(&contacts, &numContacts) != 0)
+    {
+        return -1;
     }
 
     printf("Неотсортированные контакты:\n");
     printContacts(contacts, numContacts);
 
-    int choice = 0;
+    int number = 0;
+    enum Choice choice = byPhone;
     printf("\nВыберите, как сортировать: 1 для сортировки по имени, 2 для сортировки по телефону: ");
-    scanf("%d", &choice);
+    scanf("%d", &number);
+    choice = number == 1 ? byName : byPhone;
 
     mergeSort(contacts, 0, numContacts - 1, choice);
 
     printf("\nОтсортированные контакты:\n");
     printContacts(contacts, numContacts);
 
-    fclose(file);
     free(contacts);
     return 0;
 }
