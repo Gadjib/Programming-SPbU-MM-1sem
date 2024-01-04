@@ -1,0 +1,1 @@
+gcc -Wall -Werror 8-2.c node.c
