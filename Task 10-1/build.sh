@@ -1,0 +1,1 @@
+gcc -Wall -Werror 10-1.c road.c
